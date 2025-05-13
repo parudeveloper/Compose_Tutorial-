@@ -13,11 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,23 +23,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen()
+            MainScreen(MainActivityViewModel())
         }
     }
 }
 
 @Composable
-fun MainScreen() {
-    var counter by rememberSaveable { mutableStateOf(0) }
-
-    var incrementCounter = {
-        Log.d("MainScreen", "Increment Counter Value is ${counter}")
-        counter++
-    }
-
-    var decrementCounter = {
-        Log.d("MainScreen", "Increment Counter Value is ${counter}")
-        counter--
+fun MainScreen(mainActivityViewModel: MainActivityViewModel?) {
+    mainActivityViewModel?.counter?.observeAsState()?.value.let {
+        Log.d("MainScreen", "Value Gets Updated $it")
     }
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -57,53 +45,21 @@ fun MainScreen() {
                 .fillMaxWidth()
                 .padding(2.dp)
         ) {
-            Button(onClick = { decrementCounter.invoke() }, modifier = Modifier.padding(5.dp)) {
+            Button(onClick = { mainActivityViewModel?.decrementCounter?.invoke() }, modifier = Modifier.padding(5.dp)) {
                 Text(text = "Decrement")
             }
-            Text(text = "${counter}")
+            Text(text = "${mainActivityViewModel?.counter?.value}")
 
-            Button(onClick = { incrementCounter.invoke() }) {
+            Button(onClick = { mainActivityViewModel?.incrementCounter?.invoke() }) {
                 Text(text = "Increment")
             }
         }
     }
-    /*var counter = remember { mutableStateOf(0) }
 
-    var incrementCounter = {
-        Log.d("MainScreen", "Increment Counter Value is ${counter.value}")
-        counter.value += 1
-    }
-
-    var decrementCounter = {
-        Log.d("MainScreen", "Increment Counter Value is ${counter.value}")
-        counter.value -= 1
-    }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(2.dp)
-        ) {
-            Button(onClick = { decrementCounter.invoke() }, modifier = Modifier.padding(5.dp)) {
-                Text(text = "Decrement")
-            }
-            Text(text = "${counter.value}")
-
-            Button(onClick = { incrementCounter.invoke() }) {
-                Text(text = "Increment")
-            }
-        }
-    }*/
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MainScreen()
+    MainScreen(MainActivityViewModel())
 }
