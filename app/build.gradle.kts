@@ -58,5 +58,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation("androidx.compose.runtime:runtime-livedata:1.6.5")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
+
 
 }
